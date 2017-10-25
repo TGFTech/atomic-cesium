@@ -1,0 +1,56 @@
+{
+  "name": "atomic-cesium",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "example": "example",
+    "test": "test"
+  },
+  "scripts": {
+    "start": "webpack-dev-server --progress --open",
+    "rollup": "rollup -cza",
+    "compile": "tsc",
+    "build": "npm run clean && npm run lint && npm run compile",
+    "clean": "rimraf index.js index.js.map index.d.ts bundles dist && npm run clean_src && npm run clean_example",
+    "clean_src": "rimraf src/**/*.js src/**/*.js.map src/**/*.metadata.json src/**/*.d.ts",
+    "clean_example": "rimraf example/**/*.js example/**/*.js.map example/**/*.metadata.json example/**/*.d.ts",
+    "pack": "npm run build && npm run rollup",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "tslint -c tslint.json --project tsconfig.json",
+    "dist": "webpack --config webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TGFTech/atomic-cesium.git"
+  },
+  "keywords": [
+    "cesium",
+    "map"
+  ],
+  "author": "TGFTech",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TGFTech/atomic-cesium/issues"
+  },
+  "homepage": "https://github.com/TGFTech/atomic-cesium#readme",
+  "devDependencies": {
+    "awesome-typescript-loader": "^3.2.3",
+    "copy-webpack-plugin": "^4.2.0",
+    "css-loader": "^0.28.7",
+    "file-loader": "^1.1.5",
+    "html-webpack-plugin": "^2.30.1",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.50.0",
+    "script-loader": "^0.7.2",
+    "style-loader": "^0.19.0",
+    "tslint": "^5.8.0",
+    "typescript": "^2.5.3",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.3"
+  },
+  "peerDependencies": {
+    "cesium": "^1.38.0",
+    "rxjs": "^5.5.1"
+  }
+}

@@ -1,0 +1,19 @@
+.idea/
+example/
+.circleci/
+
+# ignore the .ts files
+index.ts
+src/**/*.ts
+
+# include the .d.ts files
+!src/*.d.ts
+!src/**/*.d.ts
+
+# configuration files
+rollup.config.js
+tsconfig.json
+.npmignore
+.gitignore
+tslint.json
+npm-debug.log
