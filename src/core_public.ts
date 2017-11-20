@@ -1,0 +1,1 @@
+export { MapsManager } from './core';
