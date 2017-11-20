@@ -2,7 +2,20 @@ import { PropDesc } from './prop-description';
 import { ItemDesc } from './item-description';
 import { AcDeveloperError } from './ac-developer-error';
 
-type PropsAssigner = (source: Object, target: Object) => Object;
+export type PropsAssigner = (source: Object, target: Object) => Object;
+
+export function assign(desc: ItemDesc, source: Object, target: Object): Object {
+    let assigner = assign['cache'].get(desc.getHash());
+
+    if (!assigner) {
+        assigner = createAssigner(desc);
+        assign['cache'].set(desc.getHash(), assigner);
+    }
+
+    return assigner(source, target);
+}
+
+assign['cache'] = new Map<string, PropsAssigner>();
 
 export function createAssigner(desc: ItemDesc): PropsAssigner {
     if (!(desc instanceof ItemDesc)) {

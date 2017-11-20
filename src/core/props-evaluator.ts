@@ -6,6 +6,32 @@ import { AcDeveloperError } from './ac-developer-error';
 export type PropsEvaluator = (context: Object, cache: ComputationCache) => Object;
 export type AsyncPropsEvaluator = (context: Object, cache: ComputationCache) => Promise<Object>;
 
+export function evaluate(desc: ItemDesc, context: Object, cache: ComputationCache): Object {
+    let evaluator = evaluate['cache'].get(desc.getHash());
+
+    if (!evaluator) {
+        evaluator = createEvaluator(desc);
+        evaluate['cache'].set(desc.getHash(), evaluator);
+    }
+
+    return evaluator(context, cache);
+}
+
+evaluate['cache'] = new Map<string, PropsEvaluator>();
+
+export function evaluateAsync(desc: ItemDesc, context: Object, cache: ComputationCache): Promise<Object> {
+    let evaluator = evaluateAsync['cache'].get(desc.getHash());
+
+    if (!evaluator) {
+        evaluator = createAsyncEvaluator(desc);
+        evaluateAsync['cache'].set(desc.getHash(), evaluator);
+    }
+
+    return evaluator(context, cache);
+}
+
+evaluateAsync['cache'] = new Map<string, PropsEvaluator>();
+
 export function createEvaluator(desc: ItemDesc): PropsEvaluator {
     if (!(desc instanceof ItemDesc)) {
         throw new AcDeveloperError('createEvaluator', 'item desc must be instance of ItemDesc.');
@@ -47,7 +73,7 @@ export function createAsyncEvaluator(desc: ItemDesc): AsyncPropsEvaluator {
     }
 
     const evaluatorName = `${desc.getType()}_async_props_evaluator`;
-    const fnBody = writeEvaluatorBody(desc.getDesc());
+    const fnBody = writeAsyncEvaluatorBody(desc.getDesc());
 
     return new Function(`return function ${evaluatorName}(context, desc, cache) { 
         const props = {};
