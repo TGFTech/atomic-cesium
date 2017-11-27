@@ -1,5 +1,6 @@
-import { PropDesc } from './prop-description';
+import { isPropDesc } from './prop-descriptor';
 import { ItemDesc } from './item-description';
+import { isItemDesc } from './item-descriptor';
 import { ComputationCache } from './computation-cache';
 import { AcDeveloperError } from './ac-developer-error';
 
@@ -33,12 +34,12 @@ export function evaluateAsync(desc: ItemDesc, context: Object, cache: Computatio
 evaluateAsync['cache'] = new Map<string, PropsEvaluator>();
 
 export function createEvaluator(desc: ItemDesc): PropsEvaluator {
-    if (!(desc instanceof ItemDesc)) {
+    if (!isItemDesc(desc)) {
         throw new AcDeveloperError('createEvaluator', 'item desc must be instance of ItemDesc.');
     }
 
     const evaluatorName = `${desc.getType()}_props_evaluator`;
-    const fnBody = writeEvaluatorBody(desc.getDesc());
+    const fnBody = writeEvaluatorBody(desc.getPropsDesc());
 
     return new Function(`return function ${evaluatorName}(context, desc, cache) { 
         const props = {};
@@ -48,14 +49,14 @@ export function createEvaluator(desc: ItemDesc): PropsEvaluator {
     }`)();
 }
 
-function writeEvaluatorBody(parsedItemDesc: Object, parentProp?: string): string {
+function writeEvaluatorBody(propsDesc: Object, parentProp?: string): string {
     let fnBody = ``;
 
-    Object.keys(parsedItemDesc).forEach(propName => {
-        const propDesc = parsedItemDesc[propName];
+    Object.keys(propsDesc).forEach(propName => {
+        const propDesc = propsDesc[propName];
         const key = parentProp ?  `${parentProp}.${propName}` : propName;
 
-        if (propDesc instanceof PropDesc) {
+        if (isPropDesc(propDesc)) {
             fnBody += `props.${key} = cache.get(desc.${key}.getHash(), desc.${key}); `;
         }
         else {
@@ -68,12 +69,12 @@ function writeEvaluatorBody(parsedItemDesc: Object, parentProp?: string): string
 }
 
 export function createAsyncEvaluator(desc: ItemDesc): AsyncPropsEvaluator {
-    if (!(desc instanceof ItemDesc)) {
+    if (!isItemDesc(desc)) {
         throw new AcDeveloperError('createAsyncEvaluator', 'item desc must be instance of ItemDesc.');
     }
 
     const evaluatorName = `${desc.getType()}_async_props_evaluator`;
-    const fnBody = writeAsyncEvaluatorBody(desc.getDesc());
+    const fnBody = writeAsyncEvaluatorBody(desc.getPropsDesc());
 
     return new Function(`return function ${evaluatorName}(context, desc, cache) { 
         const props = {};
@@ -84,14 +85,14 @@ export function createAsyncEvaluator(desc: ItemDesc): AsyncPropsEvaluator {
     }`)();
 }
 
-function writeAsyncEvaluatorBody(parsedItemDesc: Object, parentProp?: string): string {
+function writeAsyncEvaluatorBody(propsDesc: Object, parentProp?: string): string {
     let fnBody = ``;
 
-    Object.keys(parsedItemDesc).forEach(propName => {
-        const propDesc = parsedItemDesc[propName];
+    Object.keys(propsDesc).forEach(propName => {
+        const propDesc = propsDesc[propName];
         const key = parentProp ?  `${parentProp}.${propName}` : propName;
 
-        if (propDesc instanceof PropDesc) {
+        if (isPropDesc(propDesc)) {
             fnBody += `tasks.push(Promise.resolve(cache.get(desc.${key}.getHash(), desc.${key})).then(val => props.${key} = val)); `;
         }
         else {

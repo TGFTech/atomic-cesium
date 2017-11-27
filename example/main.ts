@@ -1,3 +1,5 @@
-/**
- * Created by ttsah on 29/10/2017.
- */
+import 'cesium-source/Widgets/widgets.css';
+
+import { Viewer } from 'cesium';
+
+const viewer = new Viewer('cesiumContainer');
