@@ -1,1 +1,1 @@
-export * from './src/core_public';
+export * from './src/core';

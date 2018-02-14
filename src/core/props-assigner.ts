@@ -3,20 +3,20 @@ import { ItemDesc } from './item-description';
 import { isItemDesc } from './item-descriptor';
 import { AcDeveloperError } from './ac-developer-error';
 
-export type PropsAssigner = (source: Object, target: Object) => Object;
+export type PropsAssigner = (target: object, source: object) => object;
 
-export function assign(desc: ItemDesc, source: Object, target: Object): Object {
-    let assigner = assign['cache'].get(desc.getHash());
+const assignersCache = new Map<string, PropsAssigner>();
+
+export function assign(desc: ItemDesc, target: object, source: object): object {
+    let assigner = assignersCache.get(desc.getHash());
 
     if (!assigner) {
         assigner = createAssigner(desc);
-        assign['cache'].set(desc.getHash(), assigner);
+        assignersCache.set(desc.getHash(), assigner);
     }
 
-    return assigner(source, target);
+    return assigner(target, source);
 }
-
-assign['cache'] = new Map<string, PropsAssigner>();
 
 export function createAssigner(desc: ItemDesc): PropsAssigner {
     if (!isItemDesc(desc)) {
@@ -26,10 +26,10 @@ export function createAssigner(desc: ItemDesc): PropsAssigner {
     const assignerName = `${desc.getType()}_props_assigner`;
     const fnBody = writeAssignerBody(desc.getPropsDesc());
 
-    return new Function(`return function ${assignerName}(source, target) { ${fnBody} return target; }`)();
+    return new Function(`return function ${assignerName}(target, source) { ${fnBody} return target; }`)();
 }
 
-function writeAssignerBody(parsedItemDesc: Object, parentProp?: string): string {
+function writeAssignerBody(parsedItemDesc: object, parentProp?: string): string {
     let fnBody = ``;
 
     Object.keys(parsedItemDesc).forEach(propName => {

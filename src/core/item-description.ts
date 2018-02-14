@@ -2,9 +2,9 @@ export class ItemDesc {
 
     private _type: string;
     private _hash: string;
-    private _propsDesc: Object;
+    private _propsDesc: object;
 
-    constructor(type: string, hash: string, propsDesc: Object) {
+    constructor(type: string, hash: string, propsDesc: object) {
         this._type = type;
         this._hash = hash;
         this._propsDesc = propsDesc;
@@ -18,7 +18,7 @@ export class ItemDesc {
         return this._hash;
     }
 
-    getPropsDesc(): Object {
+    getPropsDesc(): object {
         return this._propsDesc;
     }
 

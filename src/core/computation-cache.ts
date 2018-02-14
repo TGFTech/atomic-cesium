@@ -8,7 +8,7 @@ export class ComputationCache {
         this._cache = new Map<string, any>();
     }
 
-    get(key: string, desc: PropDesc, context: Object): any {
+    get(key: string, desc: PropDesc, context: object): any {
         if (this._cache.has(key)) {
             return this._cache.get(key);
         }

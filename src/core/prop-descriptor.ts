@@ -1,6 +1,6 @@
 import * as hash from 'object-hash';
 import { PropDesc, PropResolver } from './prop-description';
-import { AcDeveloperError } from 'ac-developer-error';
+import { AcDeveloperError } from './ac-developer-error';
 import { isString, isFunction, isObjectLike } from 'lodash';
 
 export function isPropDesc(desc: PropDesc): boolean {

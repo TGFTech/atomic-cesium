@@ -1,6 +1,6 @@
 import * as hash from 'object-hash';
 import { ItemDesc } from './item-description';
-import { AcDeveloperError } from 'ac-developer-error';
+import { AcDeveloperError } from './ac-developer-error';
 import { createPropDesc as createProp } from './prop-descriptor';
 import { has, isString, isFunction, isObjectLike } from 'lodash';
 
@@ -12,8 +12,12 @@ export function isItemDesc(desc: ItemDesc): boolean {
     return desc instanceof ItemDesc;
 }
 
-export function validateItemDesc(description: Object) {
-    const { type, ...props } = description;
+export function validateItemDesc(description: object) {
+    if (!isObjectLike(description)) {
+        throw new AcDeveloperError('validateItemDesc', 'item desc must be object.');
+    }
+
+    const { type, ...props } = description as any;
     validateItemPropsDesc(props);
 
     if (!has(description, 'type')) {
@@ -25,7 +29,7 @@ export function validateItemDesc(description: Object) {
     }
 }
 
-function validateItemPropsDesc(description: Object) {
+function validateItemPropsDesc(description: object) {
     if (!isObjectLike(description)) {
         throw new AcDeveloperError('validateSubItemDesc', 'item desc must be object of {type: string, ...props}.');
     }
@@ -36,23 +40,23 @@ function validateItemPropsDesc(description: Object) {
         if (isObjectLike(value)) {
             validateItemPropsDesc(value);
         }
-        else if (isFunction(value)) {
+        else if (!isFunction(value)) {
             throw new AcDeveloperError('validateSubItemDesc', 'item desc property must be object of {type: string, ...props} or function.');
         }
     });
 }
 
-export function parseItemDesc(description: Object): ItemDesc {
+export function parseItemDesc(description: object): ItemDesc {
     validateItemDesc(description);
 
     const descHash = hash(description);
-    const { type, ...props } = description;
+    const { type, ...props } = description as any;
     const parsedProps = parseItemPropsDesc(props);
 
     return new ItemDesc(type, descHash, parsedProps);
 }
 
-function parseItemPropsDesc(props: Object): Object {
+function parseItemPropsDesc(props: object): object {
     const result = {};
 
     Object.keys(props).forEach(propName => {

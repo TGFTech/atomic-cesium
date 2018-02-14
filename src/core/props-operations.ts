@@ -1,8 +1,8 @@
 import { ItemDesc } from './item-description';
 import { ComputationCache } from './computation-cache';
 import { createAssigner, PropsAssigner } from './props-assigner';
-import {createEvaluator, PropsEvaluator, AsyncPropsEvaluator, createAsyncEvaluator} from './props-evaluator';
-import {createExecutor, PropsExecutor, AsyncPropsExecutor, createAsyncExecutor} from './props-executor';
+import { createEvaluator, PropsEvaluator, AsyncPropsEvaluator, createAsyncEvaluator } from './props-evaluator';
+import { createExecutor, PropsExecutor, AsyncPropsExecutor, createAsyncExecutor } from './props-executor';
 
 export class Props {
 
@@ -12,7 +12,7 @@ export class Props {
     private static _executors = new Map<string, PropsExecutor>();
     private static _asyncExecutors = new Map<string, AsyncPropsExecutor>();
 
-    static assign(desc: ItemDesc, target: Object, source: Object): Object {
+    static assign(desc: ItemDesc, target: object, source: object): object {
         let assigner = Props._assigners.get(desc.getHash());
 
         if (!assigner) {
@@ -23,7 +23,7 @@ export class Props {
         return assigner(target, source);
     }
 
-    static evalute(desc: ItemDesc, context: Object, cache: ComputationCache): Object {
+    static evaluate(desc: ItemDesc, context: object, cache: ComputationCache): object {
         let evaluator = Props._evaluators.get(desc.getHash());
 
         if (!evaluator) {
@@ -31,10 +31,10 @@ export class Props {
             Props._evaluators.set(desc.getHash(), evaluator);
         }
 
-        return evaluator(context, cache);
+        return evaluator(context, desc, cache);
     }
 
-    static evaluteAsync(desc: ItemDesc, context: Object, cache: ComputationCache): Promise<Object> {
+    static evaluateAsync(desc: ItemDesc, context: object, cache: ComputationCache): Promise<object> {
         let asyncEvaluator = Props._asyncEvaluators.get(desc.getHash());
 
         if (!asyncEvaluator) {
@@ -42,10 +42,10 @@ export class Props {
             Props._asyncEvaluators.set(desc.getHash(), asyncEvaluator);
         }
 
-        return asyncEvaluator(context, cache);
+        return asyncEvaluator(context, desc, cache);
     }
 
-    static execute(desc: ItemDesc, target: Object, context: Object, cache: ComputationCache): Object {
+    static execute(desc: ItemDesc, target: object, context: object, cache: ComputationCache): object {
         let executor = Props._executors.get(desc.getHash());
 
         if (!executor) {
@@ -53,10 +53,10 @@ export class Props {
             Props._executors.set(desc.getHash(), executor);
         }
 
-        return executor(target, context, cache);
+        return executor(target, context, desc, cache);
     }
 
-    static executeAsync(desc: ItemDesc, target: Object, context: Object, cache: ComputationCache): Promise<Object> {
+    static executeAsync(desc: ItemDesc, target: object, context: object, cache: ComputationCache): Promise<object> {
         let asyncExecutor = Props._asyncExecutors.get(desc.getHash());
 
         if (!asyncExecutor) {
@@ -64,6 +64,6 @@ export class Props {
             Props._asyncExecutors.set(desc.getHash(), asyncExecutor);
         }
 
-        return asyncExecutor(target, context, cache);
+        return asyncExecutor(target, context, desc, cache);
     }
 }

@@ -4,34 +4,34 @@ import { isItemDesc } from './item-descriptor';
 import { ComputationCache } from './computation-cache';
 import { AcDeveloperError } from './ac-developer-error';
 
-export type PropsEvaluator = (context: Object, cache: ComputationCache) => Object;
-export type AsyncPropsEvaluator = (context: Object, cache: ComputationCache) => Promise<Object>;
+export type PropsEvaluator = (context: object, desc: ItemDesc, cache: ComputationCache) => object;
+export type AsyncPropsEvaluator = (context: object, desc: ItemDesc, cache: ComputationCache) => Promise<object>;
 
-export function evaluate(desc: ItemDesc, context: Object, cache: ComputationCache): Object {
-    let evaluator = evaluate['cache'].get(desc.getHash());
+const evaluatorsCache = new Map<string, PropsEvaluator>();
+const asyncEvaluatorsCache = new Map<string, AsyncPropsEvaluator>();
+
+export function evaluate(desc: ItemDesc, context: object, cache: ComputationCache): object {
+    let evaluator = evaluatorsCache.get(desc.getHash());
 
     if (!evaluator) {
         evaluator = createEvaluator(desc);
-        evaluate['cache'].set(desc.getHash(), evaluator);
+        evaluatorsCache.set(desc.getHash(), evaluator);
     }
 
-    return evaluator(context, cache);
+    return evaluator(context, desc, cache);
 }
 
-evaluate['cache'] = new Map<string, PropsEvaluator>();
-
-export function evaluateAsync(desc: ItemDesc, context: Object, cache: ComputationCache): Promise<Object> {
-    let evaluator = evaluateAsync['cache'].get(desc.getHash());
+export function evaluateAsync(desc: ItemDesc, context: object, cache: ComputationCache): Promise<object> {
+    let evaluator = asyncEvaluatorsCache.get(desc.getHash());
 
     if (!evaluator) {
         evaluator = createAsyncEvaluator(desc);
-        evaluateAsync['cache'].set(desc.getHash(), evaluator);
+        asyncEvaluatorsCache.set(desc.getHash(), evaluator);
     }
 
-    return evaluator(context, cache);
+    return evaluator(context, desc, cache);
 }
 
-evaluateAsync['cache'] = new Map<string, PropsEvaluator>();
 
 export function createEvaluator(desc: ItemDesc): PropsEvaluator {
     if (!isItemDesc(desc)) {
@@ -43,6 +43,7 @@ export function createEvaluator(desc: ItemDesc): PropsEvaluator {
 
     return new Function(`return function ${evaluatorName}(context, desc, cache) { 
         const props = {};
+        const propsDesc = desc.getPropsDesc();
         ${fnBody}
          
         return props;
@@ -57,7 +58,7 @@ function writeEvaluatorBody(propsDesc: Object, parentProp?: string): string {
         const key = parentProp ?  `${parentProp}.${propName}` : propName;
 
         if (isPropDesc(propDesc)) {
-            fnBody += `props.${key} = cache.get(desc.${key}.getHash(), desc.${key}); `;
+            fnBody += `props.${key} = cache.get(propsDesc.${key}.getHash(), propsDesc.${key}, context); `;
         }
         else {
             fnBody += `props.${propName} = {}; `;
@@ -79,6 +80,7 @@ export function createAsyncEvaluator(desc: ItemDesc): AsyncPropsEvaluator {
     return new Function(`return function ${evaluatorName}(context, desc, cache) { 
         const props = {};
         const tasks = [];
+        const propsDesc = desc.getPropsDesc();
         ${fnBody}
         
         return Promise.all(tasks).then(() => props); 
@@ -93,7 +95,8 @@ function writeAsyncEvaluatorBody(propsDesc: Object, parentProp?: string): string
         const key = parentProp ?  `${parentProp}.${propName}` : propName;
 
         if (isPropDesc(propDesc)) {
-            fnBody += `tasks.push(Promise.resolve(cache.get(desc.${key}.getHash(), desc.${key})).then(val => props.${key} = val)); `;
+            fnBody += `tasks.push(Promise.resolve(cache.get(propsDesc.${key}.getHash(), propsDesc.${key}, context))
+                .then(val => props.${key} = val)); `;
         }
         else {
             fnBody += `props.${propName} = {}; `;

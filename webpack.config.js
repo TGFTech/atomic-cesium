@@ -51,7 +51,7 @@ const config = {
             CESIUM_BASE_URL: JSON.stringify('./assets/cesium/')
         })
     ],
-    devtool: 'eval',
+    devtool: 'source-map',
     devServer: {
         contentBase: './dist/',
         stats: 'minimal',
