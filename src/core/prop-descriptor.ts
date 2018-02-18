@@ -3,7 +3,7 @@ import { PropDesc, PropResolver } from './prop-description';
 import { AcDeveloperError } from './ac-developer-error';
 import { isString, isFunction, isObjectLike } from 'lodash';
 
-export function isPropDesc(desc: PropDesc): boolean {
+export function isPropDesc(desc: any): boolean {
     if (!(isObjectLike(desc))) {
         return false;
     }

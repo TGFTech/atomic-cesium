@@ -2,7 +2,7 @@ import { EntityDesc } from './entity-description';
 import { AcDeveloperError } from './ac-developer-error';
 import { validateItemDesc, parseItemDesc } from './item-descriptor';
 
-export function validateEntityDesc(description: object[]) {
+export function validateEntityDesc(description: any) {
     if (!Array.isArray(description)) {
         throw new AcDeveloperError('validateEntityDesc', 'entity description must be array.');
     }

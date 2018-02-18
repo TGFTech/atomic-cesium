@@ -1,10 +1,16 @@
+import { PropResolver } from './prop-description';
+
+export interface PropsDesc {
+    [key: string]: PropResolver;
+}
+
 export class ItemDesc {
 
     private _type: string;
     private _hash: string;
-    private _propsDesc: object;
+    private _propsDesc: PropsDesc;
 
-    constructor(type: string, hash: string, propsDesc: object) {
+    constructor(type: string, hash: string, propsDesc: PropsDesc) {
         this._type = type;
         this._hash = hash;
         this._propsDesc = propsDesc;
@@ -18,7 +24,7 @@ export class ItemDesc {
         return this._hash;
     }
 
-    getPropsDesc(): object {
+    getPropsDesc(): PropsDesc {
         return this._propsDesc;
     }
 

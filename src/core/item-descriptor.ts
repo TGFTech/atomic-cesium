@@ -1,10 +1,10 @@
 import * as hash from 'object-hash';
-import { ItemDesc } from './item-description';
+import { ItemDesc, PropsDesc } from './item-description';
 import { AcDeveloperError } from './ac-developer-error';
 import { createPropDesc as createProp } from './prop-descriptor';
 import { has, isString, isFunction, isObjectLike } from 'lodash';
 
-export function isItemDesc(desc: ItemDesc): boolean {
+export function isItemDesc(desc: any): boolean {
     if (!(isObjectLike(desc))) {
         return false;
     }
@@ -12,7 +12,7 @@ export function isItemDesc(desc: ItemDesc): boolean {
     return desc instanceof ItemDesc;
 }
 
-export function validateItemDesc(description: object) {
+export function validateItemDesc(description: any) {
     if (!isObjectLike(description)) {
         throw new AcDeveloperError('validateItemDesc', 'item desc must be object.');
     }
@@ -56,7 +56,7 @@ export function parseItemDesc(description: object): ItemDesc {
     return new ItemDesc(type, descHash, parsedProps);
 }
 
-function parseItemPropsDesc(props: object): object {
+function parseItemPropsDesc(props: object): PropsDesc {
     const result = {};
 
     Object.keys(props).forEach(propName => {

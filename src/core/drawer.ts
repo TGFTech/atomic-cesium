@@ -1,9 +1,6 @@
 import { AcItem } from './ac-item';
 import { ItemDesc } from './item-description';
-import {
-    PrimitiveCollection,
-    CompositeEntityCollection
-} from 'cesium';
+import { PrimitiveCollection, CompositeEntityCollection} from 'cesium';
 
 export interface Drawer {
     draw(desc: ItemDesc, context: object): AcItem;

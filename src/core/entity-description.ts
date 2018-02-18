@@ -5,9 +5,9 @@ export class EntityDesc {
     private _itemsType: string[];
     private _itemsDesc: {[key: string]: ItemDesc[]};
 
-    constructor(itemsTypes: string[], itemsDec: {[key: string]: ItemDesc[]}) {
+    constructor(itemsTypes: string[], itemsDesc: {[key: string]: ItemDesc[]}) {
         this._itemsType = itemsTypes;
-        this._itemsDesc = itemsDec;
+        this._itemsDesc = itemsDesc;
     }
 
     getItemsTypes(): string[] {
