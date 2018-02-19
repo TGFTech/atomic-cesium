@@ -17,7 +17,7 @@ export function validateItemDesc(description: any) {
         throw new AcDeveloperError('validateItemDesc', 'item desc must be object.');
     }
 
-    const { type, ...props } = description as any;
+    const { type, ...props } = description;
     validateItemPropsDesc(props);
 
     if (!has(description, 'type')) {
@@ -29,7 +29,7 @@ export function validateItemDesc(description: any) {
     }
 }
 
-function validateItemPropsDesc(description: object) {
+function validateItemPropsDesc(description: any) {
     if (!isObjectLike(description)) {
         throw new AcDeveloperError('validateSubItemDesc', 'item desc must be object of {type: string, ...props}.');
     }
